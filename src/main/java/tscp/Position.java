@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.stream;
+import static java.util.stream.IntStream.range;
 
 public class Position implements Constantes {
 
@@ -90,48 +91,8 @@ public class Position implements Constantes {
 
 
         /* autres coups que roques et ep */
-      stream(INDEX_CASES64).forEach(c ->  {
-                  if (couleur[c] == au_trait) if (piece[c] == PION) {
-                      switch (au_trait) {
-                          case BLANC:
-                              if ((c & 7) != 0 && couleur[c - 9] == NOIR) gen_push(c, c - 9, 17);
-                              if ((c & 7) != 7 && couleur[c - 7] == NOIR) gen_push(c, c - 7, 17);
-                              if (couleur[c - 8] == VIDE) {
-                                  gen_push(c, c - 8, 16);
-                                  if (c >= 48 && couleur[c - 16] == VIDE) gen_push(c, c - 16, 24);
-                              }
-                              break;
-                          case NOIR:
-                              if ((c & 7) != 0 && couleur[c + 7] == BLANC) gen_push(c, c + 7, 17);
-                              if ((c & 7) != 7 && couleur[c + 9] == BLANC) gen_push(c, c + 9, 17);
-                              if (couleur[c + 8] == VIDE) {
-                                  gen_push(c, c + 8, 16);
-                                  if (c <= 15 && couleur[c + 16] == VIDE) gen_push(c, c + 16, 24);
-                              }
-                              break;
-                      }
-                  } else {
-                      for (int j = 0; j < offsets[piece[c]]; ++j) {
-                          for (int n = c; ; ) {
-                              n = mailbox[mailbox64[n] + offset[piece[c]][j]];
-                              if (n == -1) {
-                                  break;
-                              }
-                              if (couleur[n] != VIDE) {
-                                  if (couleur[n] == non_au_trait) {
-                                      gen_push(c, n, 1);
-                                  }
-                                  break;
-                              }
-                              gen_push(c, n, 0);
-                              if (!slide[piece[c]]) {
-                                  break;
-                              }
-                          }
-                      }
-                  }
-              }
-      );
+        stream(INDEX_CASES64).forEach(this::sub_gen);
+
         /* generate castle moves */
         if (au_trait == BLANC) {
             if ((roque & 1) != 0) {
@@ -385,4 +346,40 @@ public class Position implements Constantes {
         System.out.print("\n\n   a b c d e f g h\n\n");
     }
 
+    private void sub_gen(int c) {
+        if (couleur[c] == au_trait) if (piece[c] == PION) {
+            switch (au_trait) {
+                case BLANC:
+                    if ((c & 7) != 0 && couleur[c - 9] == NOIR) gen_push(c, c - 9, 17);
+                    if ((c & 7) != 7 && couleur[c - 7] == NOIR) gen_push(c, c - 7, 17);
+                    if (couleur[c - 8] == VIDE) {
+                        gen_push(c, c - 8, 16);
+                        if (c >= 48 && couleur[c - 16] == VIDE) gen_push(c, c - 16, 24);
+                    }
+                    break;
+                case NOIR:
+                    if ((c & 7) != 0 && couleur[c + 7] == BLANC) gen_push(c, c + 7, 17);
+                    if ((c & 7) != 7 && couleur[c + 9] == BLANC) gen_push(c, c + 9, 17);
+                    if (couleur[c + 8] == VIDE) {
+                        gen_push(c, c + 8, 16);
+                        if (c <= 15 && couleur[c + 16] == VIDE) gen_push(c, c + 16, 24);
+                    }
+                    break;
+            }
+        } else {
+            range(0, offsets[piece[c]]).forEach(j -> {
+                for (int n = c; ; ) {
+                    n = mailbox[mailbox64[n] + offset[piece[c]][j]];
+                    if (n == -1) break;
+                    if (couleur[n] != VIDE) {
+                        if (couleur[n] == non_au_trait) gen_push(c, n, 1);
+                        break;
+                    }
+                    gen_push(c, n, 0);
+                    if (!slide[piece[c]]) break;
+                }
+            });
+
+        }
+    }
 }
