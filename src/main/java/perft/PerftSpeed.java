@@ -1,13 +1,12 @@
 package perft;
 
 import perft.PerftCompare.PerftResult;
-
-import tscp.Position;
+import tools.FenToBoard;
 import tscp.Coups;
+import tscp.Position;
 
 import java.io.IOException;
 import java.util.List;
-import tools.FenToBoard;
 
 public class PerftSpeed {
     //new brancheA1

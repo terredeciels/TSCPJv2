@@ -1,7 +1,7 @@
 package tools;
 
-import tscp.Position;
 import tscp.Constantes;
+import tscp.Position;
 
 public class FenToBoard implements Constantes {
 

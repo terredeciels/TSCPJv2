@@ -1,24 +1,18 @@
 package tscp;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.IntStream.range;
 
-public class Position implements Constantes {
+public class Position extends FPosition {
 
-    public int[] couleur = new int[64];
-    public int[] piece = new int[64];
-    public int au_trait;
-    public int non_au_trait;
     public int roque;
     public int ep;
-    public List<Coups> pseudomoves = new ArrayList<>();
-    private int fifty;
-    private UndoMove um = new UndoMove();
     public int halfMoveClock;
     public int plyNumber;
+    private int fifty;
+    private UndoMove um = new UndoMove();
 
     public Position() {
     }
@@ -35,78 +29,9 @@ public class Position implements Constantes {
         um = new UndoMove();
     }
 
-    private boolean en_echec(int s) {
-        final boolean[] b = new boolean[1];
-        stream(INDEX_CASES64).filter(i -> piece[i] == ROI && couleur[i] == s).forEach(i -> {
-            b[0] = attaque(i, s ^ 1);
-        });
-        return b[0];
-    }
-
-    private boolean attaque(int sq, int s) {
-        final boolean[] b = new boolean[1];
-        stream(INDEX_CASES64).filter(i -> couleur[i] == s).forEach(i ->
-        {
-            if (piece[i] == PION) {
-                if (s == BLANC) {
-                    if (s_blanc(sq, i)) b[0] = true;
-                } else if (s_noir(sq, i)) b[0] = true;
-            } else if (non_pion(sq, i)) b[0] = true;
-        });
-        return b[0];
-    }
-
-    private boolean non_pion(int sq, int i) {
-        for (int j = 0; j < champ[piece[i]]; ++j) {
-            for (int n = i; ; ) {
-                n = fmailbox(i, j, n);
-                if (n == -1) {
-                    break;
-                }
-                if (n == sq) {
-                    return true;
-                }
-                if (couleur[n] != VIDE) {
-                    break;
-                }
-                if (!slide[piece[i]]) {
-                    break;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean s_noir(int sq, int i) {
-        if ((i & 7) != 0 && i + 7 == sq) {
-            return true;
-        }
-        if ((i & 7) != 7 && i + 9 == sq) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean s_blanc(int sq, int i) {
-        if ((i & 7) != 0 && i - 9 == sq) {
-            return true;
-        }
-        if ((i & 7) != 7 && i - 7 == sq) {
-            return true;
-        }
-        return false;
-    }
-
-    private void sub_attaque(int i) {
-
-    }
-
     public void gen() {
-
-
         /* autres coups que roques et ep */
         stream(INDEX_CASES64).forEach(this::sub_gen);
-
         /* generate castle moves */
         if (au_trait == BLANC) {
             if ((roque & 1) != 0) {
@@ -123,7 +48,6 @@ public class Position implements Constantes {
                 gen_push(E8, C8, 2);
             }
         }
-
         /* generate en passant moves */
         if (ep != -1) {
             if (au_trait == BLANC) {
@@ -144,26 +68,45 @@ public class Position implements Constantes {
         }
     }
 
-    private void gen_push(int from, int to, int bits) {
-        if ((bits & 16) != 0) {
-            if (au_trait == BLANC) {
-                if (to <= H8) {
-                    gen_promote(from, to, bits);
-                    return;
-                }
-            } else if (to >= A1) {
-                gen_promote(from, to, bits);
-                return;
-            }
-        }
-        pseudomoves.add(new Coups((byte) from, (byte) to, (byte) 0, (byte) bits));
-
+    private boolean en_echec(int side) {
+        final boolean[] b = new boolean[1];
+        stream(INDEX_CASES64).filter(c -> piece[c] == ROI && couleur[c] == side).forEach(c -> {
+            b[0] = attaque(c, side ^ 1);
+        });
+        return b[0];
     }
 
-    private void gen_promote(int from, int to, int bits) {
-        for (int i = CAVALIER; i <= DAME; ++i) {
-            pseudomoves.add(new Coups((byte) from, (byte) to, (byte) i, (byte) (bits | 32)));
-        }
+    private boolean attaque(int c_roi_side, int side) {
+        final boolean[] b = new boolean[1];
+        stream(INDEX_CASES64).filter(c -> couleur[c] == side).forEach(c ->
+        {
+            if (piece[c] == PION) {
+                if (side == BLANC) {
+                    if (s_blanc(c_roi_side, c)) b[0] = true;
+                } else if (s_noir(c_roi_side, c)) b[0] = true;
+            } else if (non_pion(c_roi_side, c)) b[0] = true;
+        });
+        return b[0];
+    }
+
+    private boolean non_pion(int sq, int i) {
+        final boolean[] b = new boolean[1];
+        range(0, champ[piece[i]]).forEach(j -> {
+                    int n = i;
+                    while (true) {
+                        n = fmailbox(i, j, n);
+                        if (n == OUT) break;
+                        if (n == sq) {
+                            b[0] = true;
+                            break;
+                        }
+                        if (couleur[n] != VIDE) break;
+                        if (!slide[piece[i]]) break;
+                    }
+                }
+
+        );
+        return b[0];
     }
 
     public boolean makemove(Coups m) {
@@ -332,81 +275,6 @@ public class Position implements Constantes {
                 piece[m.dest - 8] = PION;
             }
         }
-    }
-
-    private void sub_gen(int _c) {
-        if (couleur[_c] == au_trait) if (piece[_c] == PION) {
-            switch (au_trait) {
-                case BLANC:
-                    fpion_blanc(_c);
-                    break;
-                case NOIR:
-                    fpion_noir(_c);
-            }
-        } else range(0, champ[piece[_c]]).forEach(dir -> {
-            int c0 = _c;
-            c0 = fmailbox(_c, dir, c0);
-            while (extracted(_c, c0)) c0 = fmailbox(_c, dir, c0);
-        });
-    }
-
-    private void fpion_noir(int _c) {
-        if ((_c & 7) != 0 && couleur[_c + 7] == BLANC) gen_push(_c, _c + 7, 17);
-        if ((_c & 7) != 7 && couleur[_c + 9] == BLANC) gen_push(_c, _c + 9, 17);
-        if (couleur[_c + 8] == VIDE) {
-            gen_push(_c, _c + 8, 16);
-            if (_c <= 15 && couleur[_c + 16] == VIDE) gen_push(_c, _c + 16, 24);
-        }
-    }
-
-    private void fpion_blanc(int _c) {
-        if ((_c & 7) != 0 && couleur[_c - 9] == NOIR) gen_push(_c, _c - 9, 17);
-        if ((_c & 7) != 7 && couleur[_c - 7] == NOIR) gen_push(_c, _c - 7, 17);
-        if (couleur[_c - 8] == VIDE) {
-            gen_push(_c, _c - 8, 16);
-            if (_c >= 48 && couleur[_c - 16] == VIDE) gen_push(_c, _c - 16, 24);
-        }
-    }
-
-    private int fmailbox(int _c, int dir, int c0) {
-        return mailbox[CASES64[c0] + delta[piece[_c]][dir]];
-    }
-
-    private boolean extracted(int c, int c0) {
-
-        if (c0 == OUT) return false;
-        if (couleur[c0] == VIDE) {
-            gen_push(c, c0, 0);
-            return slide[piece[c]];
-        }
-        if (couleur[c0] == non_au_trait) {
-            gen_push(c, c0, 1);
-            return false;
-        }
-        return false;
-    }
-
-    public void print_board() {
-        int i;
-
-        System.out.print("\n8 ");
-        for (i = 0; i < 64; ++i) {
-            switch (couleur[i]) {
-                case VIDE:
-                    System.out.print(". ");
-                    break;
-                case BLANC:
-                    System.out.printf(piece_char_light[piece[i]] + " ");
-                    break;
-                case NOIR:
-                    System.out.printf(piece_char_dark[piece[i]] + " ");
-                    break;
-            }
-            if ((i + 1) % 8 == 0 && i != 63) {
-                System.out.printf("\n%d ", 7 - (i >> 3));
-            }
-        }
-        System.out.print("\n\n   a b c d e f g h\n\n");
     }
 
 }

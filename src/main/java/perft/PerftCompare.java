@@ -1,22 +1,22 @@
 package perft;
 
-import tscp.Position;
+import tools.FenToBoard;
 import tscp.Constantes;
 import tscp.Coups;
+import tscp.Position;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import tools.FenToBoard;
 
 public class PerftCompare implements Constantes {
     //new brancheA1
     public static void main(String[] args) throws IOException {
         int maxDepth = 4;
         File directory = new File(".");
-        FileReader fileReader = new FileReader(directory.getCanonicalPath()+"/src/main/java/perft/perftsuite.epd");
+        FileReader fileReader = new FileReader(directory.getCanonicalPath() + "/src/main/java/perft/perftsuite.epd");
         BufferedReader reader = new BufferedReader(fileReader);
         String line;
         int passes = 0;

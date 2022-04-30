@@ -1,12 +1,11 @@
 package tscp;
 
 
-
 public class Tests {
 
-    Tests(){
+    Tests() {
         int c = 10;
-        for(int n=c;;){
+        for (int n = c; ; ) {
             c--;
         }
     }
