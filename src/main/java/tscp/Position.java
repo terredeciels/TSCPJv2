@@ -70,7 +70,7 @@ public class Position extends FPosition {
 
     private boolean en_echec(int side) {
         final boolean[] b = new boolean[1];
-        stream(INDEX_CASES64).filter(c -> piece[c] == ROI && couleur[c] == side).forEach(c -> {
+        stream(INDEX_CASES64).filter(c -> test(piece, c, ROI) && test(couleur, c, side)).forEach(c -> {
             b[0] = attaque(c, side ^ 1);
         });
         return b[0];
@@ -78,9 +78,9 @@ public class Position extends FPosition {
 
     private boolean attaque(int c_roi_side, int side) {
         final boolean[] b = new boolean[1];
-        stream(INDEX_CASES64).filter(c -> couleur[c] == side).forEach(c ->
+        stream(INDEX_CASES64).filter(c -> test(couleur, c, side)).forEach(c ->
         {
-            if (piece[c] == PION) {
+            if (test(piece, c, PION)) {
                 if (side == BLANC) {
                     if (s_blanc(c_roi_side, c)) b[0] = true;
                 } else if (s_noir(c_roi_side, c)) b[0] = true;
@@ -100,7 +100,7 @@ public class Position extends FPosition {
                             b[0] = true;
                             break;
                         }
-                        if (couleur[n] != VIDE) break;
+                        if (!(test(couleur, n, VIDE))) break;
                         if (!slide[piece[i]]) break;
                     }
                 }
