@@ -64,9 +64,9 @@ public class Position implements Constantes {
                         }
                     }
                 } else {
-                    for (int j = 0; j < offsets[piece[i]]; ++j) {
+                    for (int j = 0; j < champ[piece[i]]; ++j) {
                         for (int n = i; ; ) {
-                            n = mailbox[mailbox64[n] + offset[piece[i]][j]];
+                            n = mailbox[CASES64[n] + delta[piece[i]][j]];
                             if (n == -1) {
                                 break;
                             }
@@ -346,38 +346,41 @@ public class Position implements Constantes {
         System.out.print("\n\n   a b c d e f g h\n\n");
     }
 
-    private void sub_gen(int c) {
-        if (couleur[c] == au_trait) if (piece[c] == PION) {
+    private void sub_gen(int _c) {
+        if (couleur[_c] == au_trait) if (piece[_c] == PION) {
             switch (au_trait) {
                 case BLANC:
-                    if ((c & 7) != 0 && couleur[c - 9] == NOIR) gen_push(c, c - 9, 17);
-                    if ((c & 7) != 7 && couleur[c - 7] == NOIR) gen_push(c, c - 7, 17);
-                    if (couleur[c - 8] == VIDE) {
-                        gen_push(c, c - 8, 16);
-                        if (c >= 48 && couleur[c - 16] == VIDE) gen_push(c, c - 16, 24);
+                    if ((_c & 7) != 0 && couleur[_c - 9] == NOIR) gen_push(_c, _c - 9, 17);
+                    if ((_c & 7) != 7 && couleur[_c - 7] == NOIR) gen_push(_c, _c - 7, 17);
+                    if (couleur[_c - 8] == VIDE) {
+                        gen_push(_c, _c - 8, 16);
+                        if (_c >= 48 && couleur[_c - 16] == VIDE) gen_push(_c, _c - 16, 24);
                     }
                     break;
                 case NOIR:
-                    if ((c & 7) != 0 && couleur[c + 7] == BLANC) gen_push(c, c + 7, 17);
-                    if ((c & 7) != 7 && couleur[c + 9] == BLANC) gen_push(c, c + 9, 17);
-                    if (couleur[c + 8] == VIDE) {
-                        gen_push(c, c + 8, 16);
-                        if (c <= 15 && couleur[c + 16] == VIDE) gen_push(c, c + 16, 24);
+                    if ((_c & 7) != 0 && couleur[_c + 7] == BLANC) gen_push(_c, _c + 7, 17);
+                    if ((_c & 7) != 7 && couleur[_c + 9] == BLANC) gen_push(_c, _c + 9, 17);
+                    if (couleur[_c + 8] == VIDE) {
+                        gen_push(_c, _c + 8, 16);
+                        if (_c <= 15 && couleur[_c + 16] == VIDE) gen_push(_c, _c + 16, 24);
                     }
                     break;
             }
         } else {
-            range(0, offsets[piece[c]]).forEach(j -> {
-                int n = c;
-                n = mailbox[mailbox64[n] + offset[piece[c]][j]];
-                while (!extracted(c, n)) n = mailbox[mailbox64[n] + offset[piece[c]][j]];
+
+            range(0, champ[piece[_c]]).forEach(dir -> {
+                int c0 = _c;
+                c0 = mailbox[CASES64[c0] + delta[piece[_c]][dir]];
+                while (!extracted(_c, c0)) {
+                    c0 = mailbox[CASES64[c0] + delta[piece[_c]][dir]];
+                }
             });
 
         }
     }
 
     private boolean extracted(int c, int n) {
-        if (n == -1) return true;
+        if (n == NO_SQUARE) return true;
         if (couleur[n] != VIDE) {
             if (couleur[n] == non_au_trait) gen_push(c, n, 1);
             return true;
