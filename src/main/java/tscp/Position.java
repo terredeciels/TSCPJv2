@@ -10,8 +10,8 @@ public class Position implements Constantes {
 
     public int[] couleur = new int[64];
     public int[] piece = new int[64];
-    public int au_trait;
-    public int non_au_trait;
+    public  int au_trait;
+    public  int non_au_trait;
     public int roque;
     public int ep;
     public List<Coups> pseudomoves = new ArrayList<>();
@@ -36,12 +36,15 @@ public class Position implements Constantes {
     }
 
     private boolean en_echec(int s) {
-        for (int i = 0; i < 64; ++i) {
-            if (piece[i] == ROI && couleur[i] == s) {
-                return attaque(i, s ^ 1);
-            }
-        }
-        return true; // shouldn't get here
+        final boolean[] b = new boolean[1];
+        stream(INDEX_CASES64).filter(i -> piece[i] == ROI && couleur[i] == s).forEach(i -> {
+          b[0] = attaque(i, s ^ 1);
+
+        });
+        return b[0];
+
+       // for (int i = 0; i < 64; ++i) if (piece[i] == ROI && couleur[i] == s) return attaque(i, s ^ 1);
+      //  return true; // shouldn't get here
     }
 
     private boolean attaque(int sq, int s) {
@@ -320,8 +323,55 @@ public class Position implements Constantes {
         }
     }
 
-    public String[] piece_char_light = {"P", "N", "B", "R", "Q", "K"};
-    public String[] piece_char_dark = {"p", "n", "b", "r", "q", "k"};
+    private void sub_gen(int _c) {
+        if (couleur[_c] == au_trait) if (piece[_c] == PION) {
+            switch (au_trait) {
+                case BLANC: fpion_blanc(_c);
+                    break;
+                case NOIR: fpion_noir(_c);
+            }
+        } else range(0, champ[piece[_c]]).forEach(dir -> {
+            int c0 = _c;
+            c0 = fmailbox(_c, dir, c0);
+            while (extracted(_c, c0)) c0 = fmailbox(_c, dir, c0);
+        });
+    }
+
+    private void fpion_noir(int _c) {
+        if ((_c & 7) != 0 && couleur[_c + 7] == BLANC) gen_push(_c, _c + 7, 17);
+        if ((_c & 7) != 7 && couleur[_c + 9] == BLANC) gen_push(_c, _c + 9, 17);
+        if (couleur[_c + 8] == VIDE) {
+            gen_push(_c, _c + 8, 16);
+            if (_c <= 15 && couleur[_c + 16] == VIDE) gen_push(_c, _c + 16, 24);
+        }
+    }
+
+    private void fpion_blanc(int _c) {
+        if ((_c & 7) != 0 && couleur[_c - 9] == NOIR) gen_push(_c, _c - 9, 17);
+        if ((_c & 7) != 7 && couleur[_c - 7] == NOIR) gen_push(_c, _c - 7, 17);
+        if (couleur[_c - 8] == VIDE) {
+            gen_push(_c, _c - 8, 16);
+            if (_c >= 48 && couleur[_c - 16] == VIDE) gen_push(_c, _c - 16, 24);
+        }
+    }
+
+    private int fmailbox(int _c, int dir, int c0) {
+        return mailbox[CASES64[c0] + delta[piece[_c]][dir]];
+    }
+
+    private boolean extracted(int c, int c0) {
+
+        if (c0 == OUT) return false;
+        if (couleur[c0] == VIDE) {
+            gen_push(c, c0, 0);
+            return slide[piece[c]];
+        }
+        if (couleur[c0] == non_au_trait) {
+            gen_push(c, c0, 1);
+            return false;
+        }
+        return false;
+    }
 
     public void print_board() {
         int i;
@@ -346,48 +396,4 @@ public class Position implements Constantes {
         System.out.print("\n\n   a b c d e f g h\n\n");
     }
 
-    private void sub_gen(int _c) {
-        if (couleur[_c] == au_trait) if (piece[_c] == PION) {
-            switch (au_trait) {
-                case BLANC:
-                    if ((_c & 7) != 0 && couleur[_c - 9] == NOIR) gen_push(_c, _c - 9, 17);
-                    if ((_c & 7) != 7 && couleur[_c - 7] == NOIR) gen_push(_c, _c - 7, 17);
-                    if (couleur[_c - 8] == VIDE) {
-                        gen_push(_c, _c - 8, 16);
-                        if (_c >= 48 && couleur[_c - 16] == VIDE) gen_push(_c, _c - 16, 24);
-                    }
-                    break;
-                case NOIR:
-                    if ((_c & 7) != 0 && couleur[_c + 7] == BLANC) gen_push(_c, _c + 7, 17);
-                    if ((_c & 7) != 7 && couleur[_c + 9] == BLANC) gen_push(_c, _c + 9, 17);
-                    if (couleur[_c + 8] == VIDE) {
-                        gen_push(_c, _c + 8, 16);
-                        if (_c <= 15 && couleur[_c + 16] == VIDE) gen_push(_c, _c + 16, 24);
-                    }
-                    break;
-            }
-        } else {
-
-            range(0, champ[piece[_c]]).forEach(dir -> {
-                int c0 = _c;
-                c0 = fmailbox(_c, dir, c0);
-                while (extracted(_c, c0)) c0 = fmailbox(_c, dir, c0);
-            });
-
-        }
-    }
-
-    private int fmailbox(int _c, int dir, int c0) {
-        return mailbox[CASES64[c0] + delta[piece[_c]][dir]];
-    }
-
-    private boolean extracted(int c, int c0) {
-        if (c0 == OUT) return false;
-        if (couleur[c0] != VIDE) {
-            if (couleur[c0] == non_au_trait) gen_push(c, c0, 1);
-            return false;
-        }
-        gen_push(c, c0, 0);
-        return slide[piece[c]];
-    }
 }
