@@ -368,18 +368,21 @@ public class Position implements Constantes {
             }
         } else {
             range(0, offsets[piece[c]]).forEach(j -> {
-                for (int n = c; ; ) {
-                    n = mailbox[mailbox64[n] + offset[piece[c]][j]];
-                    if (n == -1) break;
-                    if (couleur[n] != VIDE) {
-                        if (couleur[n] == non_au_trait) gen_push(c, n, 1);
-                        break;
-                    }
-                    gen_push(c, n, 0);
-                    if (!slide[piece[c]]) break;
-                }
+                int n = c;
+                n = mailbox[mailbox64[n] + offset[piece[c]][j]];
+                while (!extracted(c, n)) n = mailbox[mailbox64[n] + offset[piece[c]][j]];
             });
 
         }
+    }
+
+    private boolean extracted(int c, int n) {
+        if (n == -1) return true;
+        if (couleur[n] != VIDE) {
+            if (couleur[n] == non_au_trait) gen_push(c, n, 1);
+            return true;
+        }
+        gen_push(c, n, 0);
+        return !slide[piece[c]];
     }
 }

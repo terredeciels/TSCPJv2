@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7580e65b-2b63-4565-a332-82278ebe7b1f" name="Changes" comment="perft ok">
+      <change afterPath="$PROJECT_DIR$/src/main/java/tscp/Tests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Position.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -14,6 +16,13 @@
   </component>
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -76,9 +85,23 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Tests" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="tscp.Tests" />
+      <module name="TSCPJv2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tscp.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.PerftCompare" />
+        <item itemvalue="Application.Tests" />
         <item itemvalue="Application.PerftSpeed" />
       </list>
     </recent_temporary>
@@ -134,7 +157,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651328421329</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="perft ok">
+      <created>1651329742640</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1651329742640</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
