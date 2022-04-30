@@ -10,8 +10,8 @@ public class Position implements Constantes {
 
     public int[] couleur = new int[64];
     public int[] piece = new int[64];
-    public  int au_trait;
-    public  int non_au_trait;
+    public int au_trait;
+    public int non_au_trait;
     public int roque;
     public int ep;
     public List<Coups> pseudomoves = new ArrayList<>();
@@ -38,56 +38,67 @@ public class Position implements Constantes {
     private boolean en_echec(int s) {
         final boolean[] b = new boolean[1];
         stream(INDEX_CASES64).filter(i -> piece[i] == ROI && couleur[i] == s).forEach(i -> {
-          b[0] = attaque(i, s ^ 1);
-
+            b[0] = attaque(i, s ^ 1);
         });
         return b[0];
-
-       // for (int i = 0; i < 64; ++i) if (piece[i] == ROI && couleur[i] == s) return attaque(i, s ^ 1);
-      //  return true; // shouldn't get here
     }
 
     private boolean attaque(int sq, int s) {
-        for (int i = 0; i < 64; ++i) {
-            if (couleur[i] == s) {
-                if (piece[i] == PION) {
-                    if (s == BLANC) {
-                        if ((i & 7) != 0 && i - 9 == sq) {
-                            return true;
-                        }
-                        if ((i & 7) != 7 && i - 7 == sq) {
-                            return true;
-                        }
-                    } else {
-                        if ((i & 7) != 0 && i + 7 == sq) {
-                            return true;
-                        }
-                        if ((i & 7) != 7 && i + 9 == sq) {
-                            return true;
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < champ[piece[i]]; ++j) {
-                        for (int n = i; ; ) {
-                            n = fmailbox(i, j, n);
-                            if (n == -1) {
-                                break;
-                            }
-                            if (n == sq) {
-                                return true;
-                            }
-                            if (couleur[n] != VIDE) {
-                                break;
-                            }
-                            if (!slide[piece[i]]) {
-                                break;
-                            }
-                        }
-                    }
+        final boolean[] b = new boolean[1];
+        stream(INDEX_CASES64).filter(i -> couleur[i] == s).forEach(i ->
+        {
+            if (piece[i] == PION) {
+                if (s == BLANC) {
+                    if (s_blanc(sq, i)) b[0] = true;
+                } else if (s_noir(sq, i)) b[0] = true;
+            } else if (non_pion(sq, i)) b[0] = true;
+        });
+        return b[0];
+    }
+
+    private boolean non_pion(int sq, int i) {
+        for (int j = 0; j < champ[piece[i]]; ++j) {
+            for (int n = i; ; ) {
+                n = fmailbox(i, j, n);
+                if (n == -1) {
+                    break;
+                }
+                if (n == sq) {
+                    return true;
+                }
+                if (couleur[n] != VIDE) {
+                    break;
+                }
+                if (!slide[piece[i]]) {
+                    break;
                 }
             }
         }
         return false;
+    }
+
+    private boolean s_noir(int sq, int i) {
+        if ((i & 7) != 0 && i + 7 == sq) {
+            return true;
+        }
+        if ((i & 7) != 7 && i + 9 == sq) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean s_blanc(int sq, int i) {
+        if ((i & 7) != 0 && i - 9 == sq) {
+            return true;
+        }
+        if ((i & 7) != 7 && i - 7 == sq) {
+            return true;
+        }
+        return false;
+    }
+
+    private void sub_attaque(int i) {
+
     }
 
     public void gen() {
@@ -326,9 +337,11 @@ public class Position implements Constantes {
     private void sub_gen(int _c) {
         if (couleur[_c] == au_trait) if (piece[_c] == PION) {
             switch (au_trait) {
-                case BLANC: fpion_blanc(_c);
+                case BLANC:
+                    fpion_blanc(_c);
                     break;
-                case NOIR: fpion_noir(_c);
+                case NOIR:
+                    fpion_noir(_c);
             }
         } else range(0, champ[piece[_c]]).forEach(dir -> {
             int c0 = _c;

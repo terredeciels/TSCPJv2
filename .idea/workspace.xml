@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7580e65b-2b63-4565-a332-82278ebe7b1f" name="Changes" comment="perft ok">
+    <list default="true" id="7580e65b-2b63-4565-a332-82278ebe7b1f" name="Changes" comment="en_echec modifiée OK !?">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Constantes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Constantes.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Position.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Position.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -101,8 +100,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.PerftCompare" />
-        <item itemvalue="Application.Tests" />
         <item itemvalue="Application.PerftSpeed" />
+        <item itemvalue="Application.Tests" />
       </list>
     </recent_temporary>
   </component>
@@ -185,7 +184,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651338374028</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="en_echec modifiée OK !?">
+      <created>1651340225373</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1651340225373</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -205,7 +211,8 @@
     <MESSAGE value="init branche A1 ?" />
     <MESSAGE value="test branche A1" />
     <MESSAGE value="perft ok" />
-    <option name="LAST_COMMIT_MESSAGE" value="perft ok" />
+    <MESSAGE value="en_echec modifiée OK !?" />
+    <option name="LAST_COMMIT_MESSAGE" value="en_echec modifiée OK !?" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
