@@ -1,6 +1,6 @@
 package perft;
 
-import tscp.Board;
+import tscp.Position;
 import tscp.Constantes;
 import tscp.Coups;
 
@@ -33,9 +33,9 @@ public class PerftCompare implements Constantes {
                     String[] entryParts = entry.split(" ");
                     int perftResult = Integer.parseInt(entryParts[1]);
 
-                    Board board = FenToBoard.toBoard(fen);
+                    Position position = FenToBoard.toBoard(fen);
 
-                    PerftResult result = Perft.perft(board, i);
+                    PerftResult result = Perft.perft(position, i);
                     if (perftResult == result.moveCount) {
                         passes++;
                         System.out.println("PASS: " + fen + ". Moves " + result.moveCount + ", depth " + i);
@@ -61,7 +61,7 @@ public class PerftCompare implements Constantes {
 
     private static class Perft {
 
-        static PerftResult perft(Board board, int depth) {
+        static PerftResult perft(Position position, int depth) {
 
             PerftResult result = new PerftResult();
             if (depth == 0) {
@@ -69,12 +69,12 @@ public class PerftCompare implements Constantes {
                 return result;
             }
 
-            board.gen();
-            List<Coups> pseudocoups = board.pseudomoves;
+            position.gen();
+            List<Coups> pseudocoups = position.pseudomoves;
             for (Coups coups : pseudocoups) {
-                if (board.makemove(coups)) {
-                    PerftResult subPerft = perft(new Board(board), depth - 1);
-                    board.takeback();
+                if (position.makemove(coups)) {
+                    PerftResult subPerft = perft(new Position(position), depth - 1);
+                    position.takeback();
                     result.moveCount += subPerft.moveCount;
                 }
             }

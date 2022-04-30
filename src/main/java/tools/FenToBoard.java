@@ -1,16 +1,16 @@
 package tools;
 
-import tscp.Board;
+import tscp.Position;
 import tscp.Constantes;
 
 public class FenToBoard implements Constantes {
 
-    private static Board board;
+    private static Position position;
 
-    public static Board toBoard(String fen) {
-        board = new Board();
+    public static Position toBoard(String fen) {
+        position = new Position();
         initFromFEN(fen, true);
-        return board;
+        return position;
     }
 
     private static void initFromFEN(String fen, boolean strict) throws IllegalArgumentException {
@@ -96,10 +96,10 @@ public class FenToBoard implements Constantes {
                     index++;
                 }
             }
-            board.roque = (castles & 1) == 1 ? 2 : 0;
-            board.roque += (castles & 2) == 2 ? 1 : 0;
-            board.roque += (castles & 4) == 4 ? 8 : 0;
-            board.roque += (castles & 8) == 8 ? 4 : 0;
+            position.roque = (castles & 1) == 1 ? 2 : 0;
+            position.roque += (castles & 2) == 2 ? 1 : 0;
+            position.roque += (castles & 4) == 4 ? 8 : 0;
+            position.roque += (castles & 8) == 8 ? 4 : 0;
 
         } else {
             throw new IllegalArgumentException("Malformatted fen string: expected castles at index " + index);
@@ -114,7 +114,7 @@ public class FenToBoard implements Constantes {
                 sqiEP = strToSqi(fen.substring(index, index + 2));
                 index += 2;
             }
-            board.ep = sqiEP;
+            position.ep = sqiEP;
         } else {
             throw new IllegalArgumentException("Malformatted fen string: expected ep square at index " + index);
         }
@@ -125,13 +125,13 @@ public class FenToBoard implements Constantes {
             while (index < fen.length() && fen.charAt(index) != ' ') {
                 index++;
             }
-            board.halfMoveClock = Integer.parseInt(fen.substring(start, index));
+            position.halfMoveClock = Integer.parseInt(fen.substring(start, index));
         } else {
             throw new IllegalArgumentException("Malformatted fen string: expected half move clock at index " + index);
         }
         /*========== 6th field : full move number ==========*/
         if (index + 1 < fen.length() && fen.charAt(index) == ' ') {
-            if (board.au_trait == BLANC) {
+            if (position.au_trait == BLANC) {
                 setPlyNumber(2 * (Integer.parseInt(fen.substring(index + 1)) - 1));
             } else {
                 setPlyNumber(2 * (Integer.parseInt(fen.substring(index + 1)) - 1) + 1);
@@ -151,21 +151,21 @@ public class FenToBoard implements Constantes {
     }
 
     static void setPlyNumber(int plyNumber) {
-        board.plyNumber = plyNumber;
+        position.plyNumber = plyNumber;
     }
 
     static void setToPlay(int side) {
-        board.au_trait = side;
-        board.non_au_trait = board.au_trait == BLANC ? NOIR : BLANC;
+        position.au_trait = side;
+        position.non_au_trait = position.au_trait == BLANC ? NOIR : BLANC;
     }
 
     static void setStone(int j, int i, int stone) {
         int _case = 56 - 8 * i + j;
-        board.piece[_case]
+        position.piece[_case]
                 = abs(stone) == 0 ? 6
                 : abs(stone) == 6 ? 5
                 : abs(stone) == 5 ? 0 : abs(stone);
-        board.couleur[_case]
+        position.couleur[_case]
                 = stone < 0 ? BLANC : stone > 0 ? NOIR : VIDE;
     }
 

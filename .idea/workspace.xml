@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7580e65b-2b63-4565-a332-82278ebe7b1f" name="Changes" comment="test branche A1">
+    <list default="true" id="7580e65b-2b63-4565-a332-82278ebe7b1f" name="Changes" comment="perft ok">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/perft/PerftCompare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/perft/PerftCompare.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/perft/PerftSpeed.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/perft/PerftSpeed.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tools/FenToBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tools/FenToBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Constantes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Coups.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/UndoMove.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/UndoMove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tscp/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tscp/Position.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,17 +41,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/gille/IdeaProjects/TSCPJv2&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ignore.preview.features.used": "true",
+    "last_opened_file_path": "C:/Users/gille/IdeaProjects/TSCPJv2",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Application.PerftCompare">
     <configuration name="PerftCompare" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="perft.PerftCompare" />
@@ -126,7 +124,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651324586474</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="perft ok">
+      <created>1651326844328</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1651326844328</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -145,7 +150,8 @@
     <MESSAGE value="nettoyage" />
     <MESSAGE value="init branche A1 ?" />
     <MESSAGE value="test branche A1" />
-    <option name="LAST_COMMIT_MESSAGE" value="test branche A1" />
+    <MESSAGE value="perft ok" />
+    <option name="LAST_COMMIT_MESSAGE" value="perft ok" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

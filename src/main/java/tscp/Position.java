@@ -3,8 +3,9 @@ package tscp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Board implements Constantes {
+import static java.util.Arrays.stream;
 
+public class Position implements Constantes {
 
     public int[] couleur = new int[64];
     public int[] piece = new int[64];
@@ -18,31 +19,31 @@ public class Board implements Constantes {
     public int halfMoveClock;
     public int plyNumber;
 
-    public Board() {
+    public Position() {
     }
 
-    public Board(Board board) {
-        couleur = board.couleur;
-        piece = board.piece;
-        au_trait = board.au_trait;
-        non_au_trait = board.non_au_trait;
-        roque = board.roque;
-        ep = board.ep;
-        fifty = board.fifty;
+    public Position(Position position) {
+        couleur = position.couleur;
+        piece = position.piece;
+        au_trait = position.au_trait;
+        non_au_trait = position.non_au_trait;
+        roque = position.roque;
+        ep = position.ep;
+        fifty = position.fifty;
         pseudomoves = new ArrayList<>();
         um = new UndoMove();
     }
 
-    private boolean in_check(int s) {
+    private boolean en_echec(int s) {
         for (int i = 0; i < 64; ++i) {
             if (piece[i] == ROI && couleur[i] == s) {
-                return attack(i, s ^ 1);
+                return attaque(i, s ^ 1);
             }
         }
         return true; // shouldn't get here
     }
 
-    private boolean attack(int sq, int s) {
+    private boolean attaque(int sq, int s) {
         for (int i = 0; i < 64; ++i) {
             if (couleur[i] == s) {
                 if (piece[i] == PION) {
@@ -63,7 +64,7 @@ public class Board implements Constantes {
                     }
                 } else {
                     for (int j = 0; j < offsets[piece[i]]; ++j) {
-                        for (int n = i;;) {
+                        for (int n = i; ; ) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
                             if (n == -1) {
                                 break;
@@ -86,62 +87,51 @@ public class Board implements Constantes {
     }
 
     public void gen() {
-        int j,n;
+
 
         /* autres coups que roques et ep */
-        for (int c : INDEX_CASES64) {
-            if (couleur[c] == au_trait) {
-                if (piece[c] == PION) {
-                    if (au_trait == BLANC) {
-                        if ((c & 7) != 0 && couleur[c - 9] == NOIR) {
-                            gen_push(c, c - 9, 17);
-                        }
-                        if ((c & 7) != 7 && couleur[c - 7] == NOIR) {
-                            gen_push(c, c - 7, 17);
-                        }
-                        if (couleur[c - 8] == VIDE) {
-                            gen_push(c, c - 8, 16);
-                            if (c >= 48 && couleur[c - 16] == VIDE) {
-                                gen_push(c, c - 16, 24);
-                            }
-                        }
-                    } else {
-                        if ((c & 7) != 0 && couleur[c + 7] == BLANC) {
-                            gen_push(c, c + 7, 17);
-                        }
-                        if ((c & 7) != 7 && couleur[c + 9] == BLANC) {
-                            gen_push(c, c + 9, 17);
-                        }
-                        if (couleur[c + 8] == VIDE) {
-                            gen_push(c, c + 8, 16);
-                            if (c <= 15 && couleur[c + 16] == VIDE) {
-                                gen_push(c, c + 16, 24);
-                            }
-                        }
-                    }
-                } else {
-                    for (j = 0; j < offsets[piece[c]]; ++j) {
-                        for (n = c;;) {
-                            n = mailbox[mailbox64[n] + offset[piece[c]][j]];
-                            if (n == -1) {
-                                break;
-                            }
-                            if (couleur[n] != VIDE) {
-                                if (couleur[n] == non_au_trait) {
-                                    gen_push(c, n, 1);
-                                }
-                                break;
-                            }
-                            gen_push(c, n, 0);
-                            if (!slide[piece[c]]) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
+      stream(INDEX_CASES64).forEach(c ->  {
+                  if (couleur[c] == au_trait) if (piece[c] == PION) {
+                      switch (au_trait) {
+                          case BLANC:
+                              if ((c & 7) != 0 && couleur[c - 9] == NOIR) gen_push(c, c - 9, 17);
+                              if ((c & 7) != 7 && couleur[c - 7] == NOIR) gen_push(c, c - 7, 17);
+                              if (couleur[c - 8] == VIDE) {
+                                  gen_push(c, c - 8, 16);
+                                  if (c >= 48 && couleur[c - 16] == VIDE) gen_push(c, c - 16, 24);
+                              }
+                              break;
+                          case NOIR:
+                              if ((c & 7) != 0 && couleur[c + 7] == BLANC) gen_push(c, c + 7, 17);
+                              if ((c & 7) != 7 && couleur[c + 9] == BLANC) gen_push(c, c + 9, 17);
+                              if (couleur[c + 8] == VIDE) {
+                                  gen_push(c, c + 8, 16);
+                                  if (c <= 15 && couleur[c + 16] == VIDE) gen_push(c, c + 16, 24);
+                              }
+                              break;
+                      }
+                  } else {
+                      for (int j = 0; j < offsets[piece[c]]; ++j) {
+                          for (int n = c; ; ) {
+                              n = mailbox[mailbox64[n] + offset[piece[c]][j]];
+                              if (n == -1) {
+                                  break;
+                              }
+                              if (couleur[n] != VIDE) {
+                                  if (couleur[n] == non_au_trait) {
+                                      gen_push(c, n, 1);
+                                  }
+                                  break;
+                              }
+                              gen_push(c, n, 0);
+                              if (!slide[piece[c]]) {
+                                  break;
+                              }
+                          }
+                      }
+                  }
+              }
+      );
         /* generate castle moves */
         if (au_trait == BLANC) {
             if ((roque & 1) != 0) {
@@ -206,33 +196,33 @@ public class Board implements Constantes {
             int from;
             int to;
 
-            if (in_check(au_trait)) {
+            if (en_echec(au_trait)) {
                 return false;
             }
             switch (m.dest) {
                 case 62:
-                    if (couleur[F1] != VIDE || couleur[G1] != VIDE || attack(F1, non_au_trait) || attack(G1, non_au_trait)) {
+                    if (couleur[F1] != VIDE || couleur[G1] != VIDE || attaque(F1, non_au_trait) || attaque(G1, non_au_trait)) {
                         return false;
                     }
                     from = H1;
                     to = F1;
                     break;
                 case 58:
-                    if (couleur[B1] != VIDE || couleur[C1] != VIDE || couleur[D1] != VIDE || attack(C1, non_au_trait) || attack(D1, non_au_trait)) {
+                    if (couleur[B1] != VIDE || couleur[C1] != VIDE || couleur[D1] != VIDE || attaque(C1, non_au_trait) || attaque(D1, non_au_trait)) {
                         return false;
                     }
                     from = A1;
                     to = D1;
                     break;
                 case 6:
-                    if (couleur[F8] != VIDE || couleur[G8] != VIDE || attack(F8, non_au_trait) || attack(G8, non_au_trait)) {
+                    if (couleur[F8] != VIDE || couleur[G8] != VIDE || attaque(F8, non_au_trait) || attaque(G8, non_au_trait)) {
                         return false;
                     }
                     from = H8;
                     to = F8;
                     break;
                 case 2:
-                    if (couleur[B8] != VIDE || couleur[C8] != VIDE || couleur[D8] != VIDE || attack(C8, non_au_trait) || attack(D8, non_au_trait)) {
+                    if (couleur[B8] != VIDE || couleur[C8] != VIDE || couleur[D8] != VIDE || attaque(C8, non_au_trait) || attaque(D8, non_au_trait)) {
                         return false;
                     }
                     from = A8;
@@ -296,7 +286,7 @@ public class Board implements Constantes {
 
         au_trait ^= 1;
         non_au_trait ^= 1;
-        if (in_check(non_au_trait)) {
+        if (en_echec(non_au_trait)) {
             takeback();
             return false;
         }
@@ -368,6 +358,7 @@ public class Board implements Constantes {
             }
         }
     }
+
     public String[] piece_char_light = {"P", "N", "B", "R", "Q", "K"};
     public String[] piece_char_dark = {"p", "n", "b", "r", "q", "k"};
 
