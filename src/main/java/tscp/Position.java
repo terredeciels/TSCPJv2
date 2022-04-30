@@ -66,7 +66,7 @@ public class Position implements Constantes {
                 } else {
                     for (int j = 0; j < champ[piece[i]]; ++j) {
                         for (int n = i; ; ) {
-                            n = mailbox[CASES64[n] + delta[piece[i]][j]];
+                            n = fmailbox(i, j, n);
                             if (n == -1) {
                                 break;
                             }
@@ -370,22 +370,24 @@ public class Position implements Constantes {
 
             range(0, champ[piece[_c]]).forEach(dir -> {
                 int c0 = _c;
-                c0 = mailbox[CASES64[c0] + delta[piece[_c]][dir]];
-                while (!extracted(_c, c0)) {
-                    c0 = mailbox[CASES64[c0] + delta[piece[_c]][dir]];
-                }
+                c0 = fmailbox(_c, dir, c0);
+                while (extracted(_c, c0)) c0 = fmailbox(_c, dir, c0);
             });
 
         }
     }
 
-    private boolean extracted(int c, int n) {
-        if (n == NO_SQUARE) return true;
-        if (couleur[n] != VIDE) {
-            if (couleur[n] == non_au_trait) gen_push(c, n, 1);
-            return true;
+    private int fmailbox(int _c, int dir, int c0) {
+        return mailbox[CASES64[c0] + delta[piece[_c]][dir]];
+    }
+
+    private boolean extracted(int c, int c0) {
+        if (c0 == OUT) return false;
+        if (couleur[c0] != VIDE) {
+            if (couleur[c0] == non_au_trait) gen_push(c, c0, 1);
+            return false;
         }
-        gen_push(c, n, 0);
-        return !slide[piece[c]];
+        gen_push(c, c0, 0);
+        return slide[piece[c]];
     }
 }

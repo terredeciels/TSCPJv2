@@ -107,7 +107,7 @@ public class FenToBoard implements Constantes {
         /*========== 4th field : ep square ==========*/
         if (index + 1 < fen.length() && fen.charAt(index) == ' ') {
             index++;
-            int sqiEP = NO_SQUARE;
+            int sqiEP = OUT;
             if (fen.charAt(index) == '-') {
                 index++;
             } else if (index + 2 < fen.length()) {
@@ -184,15 +184,15 @@ public class FenToBoard implements Constantes {
 
     public static final int strToSqi(String s) {
         if (s == null || s.length() != 2) {
-            return NO_SQUARE;
+            return OUT;
         }
         int col = charToCol(s.charAt(0));
         if (col == NO_COL) {
-            return NO_SQUARE;
+            return OUT;
         }
         int row = charToRow(s.charAt(1));
         if (row == NO_ROW) {
-            return NO_SQUARE;
+            return OUT;
         }
         return row * 8 + col;
 
