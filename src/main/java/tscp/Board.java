@@ -3,15 +3,16 @@ package tscp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Board implements Constants {
+public class Board implements Constantes {
 
-    public int[] color = new int[64];
+
+    public int[] couleur = new int[64];
     public int[] piece = new int[64];
-    public int side;
-    public int xside;
-    public int castle;
+    public int au_trait;
+    public int non_au_trait;
+    public int roque;
     public int ep;
-    public List<Move> pseudomoves = new ArrayList<>();
+    public List<Coups> pseudomoves = new ArrayList<>();
     private int fifty;
     private UndoMove um = new UndoMove();
     public int halfMoveClock;
@@ -21,11 +22,11 @@ public class Board implements Constants {
     }
 
     public Board(Board board) {
-        color = board.color;
+        couleur = board.couleur;
         piece = board.piece;
-        side = board.side;
-        xside = board.xside;
-        castle = board.castle;
+        au_trait = board.au_trait;
+        non_au_trait = board.non_au_trait;
+        roque = board.roque;
         ep = board.ep;
         fifty = board.fifty;
         pseudomoves = new ArrayList<>();
@@ -34,7 +35,7 @@ public class Board implements Constants {
 
     private boolean in_check(int s) {
         for (int i = 0; i < 64; ++i) {
-            if (piece[i] == KING && color[i] == s) {
+            if (piece[i] == ROI && couleur[i] == s) {
                 return attack(i, s ^ 1);
             }
         }
@@ -43,9 +44,9 @@ public class Board implements Constants {
 
     private boolean attack(int sq, int s) {
         for (int i = 0; i < 64; ++i) {
-            if (color[i] == s) {
-                if (piece[i] == PAWN) {
-                    if (s == LIGHT) {
+            if (couleur[i] == s) {
+                if (piece[i] == PION) {
+                    if (s == BLANC) {
                         if ((i & 7) != 0 && i - 9 == sq) {
                             return true;
                         }
@@ -70,7 +71,7 @@ public class Board implements Constants {
                             if (n == sq) {
                                 return true;
                             }
-                            if (color[n] != EMPTY) {
+                            if (couleur[n] != VIDE) {
                                 break;
                             }
                             if (!slide[piece[i]]) {
@@ -85,55 +86,54 @@ public class Board implements Constants {
     }
 
     public void gen() {
-        int i;
-        int j;
-        int n;
+        int j,n;
 
-        for (i = 0; i < 64; ++i) {
-            if (color[i] == side) {
-                if (piece[i] == PAWN) {
-                    if (side == LIGHT) {
-                        if ((i & 7) != 0 && color[i - 9] == DARK) {
-                            gen_push(i, i - 9, 17);
+        /* autres coups que roques et ep */
+        for (int c : INDEX_CASES64) {
+            if (couleur[c] == au_trait) {
+                if (piece[c] == PION) {
+                    if (au_trait == BLANC) {
+                        if ((c & 7) != 0 && couleur[c - 9] == NOIR) {
+                            gen_push(c, c - 9, 17);
                         }
-                        if ((i & 7) != 7 && color[i - 7] == DARK) {
-                            gen_push(i, i - 7, 17);
+                        if ((c & 7) != 7 && couleur[c - 7] == NOIR) {
+                            gen_push(c, c - 7, 17);
                         }
-                        if (color[i - 8] == EMPTY) {
-                            gen_push(i, i - 8, 16);
-                            if (i >= 48 && color[i - 16] == EMPTY) {
-                                gen_push(i, i - 16, 24);
+                        if (couleur[c - 8] == VIDE) {
+                            gen_push(c, c - 8, 16);
+                            if (c >= 48 && couleur[c - 16] == VIDE) {
+                                gen_push(c, c - 16, 24);
                             }
                         }
                     } else {
-                        if ((i & 7) != 0 && color[i + 7] == LIGHT) {
-                            gen_push(i, i + 7, 17);
+                        if ((c & 7) != 0 && couleur[c + 7] == BLANC) {
+                            gen_push(c, c + 7, 17);
                         }
-                        if ((i & 7) != 7 && color[i + 9] == LIGHT) {
-                            gen_push(i, i + 9, 17);
+                        if ((c & 7) != 7 && couleur[c + 9] == BLANC) {
+                            gen_push(c, c + 9, 17);
                         }
-                        if (color[i + 8] == EMPTY) {
-                            gen_push(i, i + 8, 16);
-                            if (i <= 15 && color[i + 16] == EMPTY) {
-                                gen_push(i, i + 16, 24);
+                        if (couleur[c + 8] == VIDE) {
+                            gen_push(c, c + 8, 16);
+                            if (c <= 15 && couleur[c + 16] == VIDE) {
+                                gen_push(c, c + 16, 24);
                             }
                         }
                     }
                 } else {
-                    for (j = 0; j < offsets[piece[i]]; ++j) {
-                        for (n = i;;) {
-                            n = mailbox[mailbox64[n] + offset[piece[i]][j]];
+                    for (j = 0; j < offsets[piece[c]]; ++j) {
+                        for (n = c;;) {
+                            n = mailbox[mailbox64[n] + offset[piece[c]][j]];
                             if (n == -1) {
                                 break;
                             }
-                            if (color[n] != EMPTY) {
-                                if (color[n] == xside) {
-                                    gen_push(i, n, 1);
+                            if (couleur[n] != VIDE) {
+                                if (couleur[n] == non_au_trait) {
+                                    gen_push(c, n, 1);
                                 }
                                 break;
                             }
-                            gen_push(i, n, 0);
-                            if (!slide[piece[i]]) {
+                            gen_push(c, n, 0);
+                            if (!slide[piece[c]]) {
                                 break;
                             }
                         }
@@ -143,36 +143,36 @@ public class Board implements Constants {
         }
 
         /* generate castle moves */
-        if (side == LIGHT) {
-            if ((castle & 1) != 0) {
+        if (au_trait == BLANC) {
+            if ((roque & 1) != 0) {
                 gen_push(E1, G1, 2);
             }
-            if ((castle & 2) != 0) {
+            if ((roque & 2) != 0) {
                 gen_push(E1, C1, 2);
             }
         } else {
-            if ((castle & 4) != 0) {
+            if ((roque & 4) != 0) {
                 gen_push(E8, G8, 2);
             }
-            if ((castle & 8) != 0) {
+            if ((roque & 8) != 0) {
                 gen_push(E8, C8, 2);
             }
         }
 
         /* generate en passant moves */
         if (ep != -1) {
-            if (side == LIGHT) {
-                if ((ep & 7) != 0 && color[ep + 7] == LIGHT && piece[ep + 7] == PAWN) {
+            if (au_trait == BLANC) {
+                if ((ep & 7) != 0 && couleur[ep + 7] == BLANC && piece[ep + 7] == PION) {
                     gen_push(ep + 7, ep, 21);
                 }
-                if ((ep & 7) != 7 && color[ep + 9] == LIGHT && piece[ep + 9] == PAWN) {
+                if ((ep & 7) != 7 && couleur[ep + 9] == BLANC && piece[ep + 9] == PION) {
                     gen_push(ep + 9, ep, 21);
                 }
             } else {
-                if ((ep & 7) != 0 && color[ep - 9] == DARK && piece[ep - 9] == PAWN) {
+                if ((ep & 7) != 0 && couleur[ep - 9] == NOIR && piece[ep - 9] == PION) {
                     gen_push(ep - 9, ep, 21);
                 }
-                if ((ep & 7) != 7 && color[ep - 7] == DARK && piece[ep - 7] == PAWN) {
+                if ((ep & 7) != 7 && couleur[ep - 7] == NOIR && piece[ep - 7] == PION) {
                     gen_push(ep - 7, ep, 21);
                 }
             }
@@ -181,7 +181,7 @@ public class Board implements Constants {
 
     private void gen_push(int from, int to, int bits) {
         if ((bits & 16) != 0) {
-            if (side == LIGHT) {
+            if (au_trait == BLANC) {
                 if (to <= H8) {
                     gen_promote(from, to, bits);
                     return;
@@ -191,48 +191,48 @@ public class Board implements Constants {
                 return;
             }
         }
-        pseudomoves.add(new Move((byte) from, (byte) to, (byte) 0, (byte) bits));
+        pseudomoves.add(new Coups((byte) from, (byte) to, (byte) 0, (byte) bits));
 
     }
 
     private void gen_promote(int from, int to, int bits) {
-        for (int i = KNIGHT; i <= QUEEN; ++i) {
-            pseudomoves.add(new Move((byte) from, (byte) to, (byte) i, (byte) (bits | 32)));
+        for (int i = CAVALIER; i <= DAME; ++i) {
+            pseudomoves.add(new Coups((byte) from, (byte) to, (byte) i, (byte) (bits | 32)));
         }
     }
 
-    public boolean makemove(Move m) {
+    public boolean makemove(Coups m) {
         if ((m.bits & 2) != 0) {
             int from;
             int to;
 
-            if (in_check(side)) {
+            if (in_check(au_trait)) {
                 return false;
             }
-            switch (m.to) {
+            switch (m.dest) {
                 case 62:
-                    if (color[F1] != EMPTY || color[G1] != EMPTY || attack(F1, xside) || attack(G1, xside)) {
+                    if (couleur[F1] != VIDE || couleur[G1] != VIDE || attack(F1, non_au_trait) || attack(G1, non_au_trait)) {
                         return false;
                     }
                     from = H1;
                     to = F1;
                     break;
                 case 58:
-                    if (color[B1] != EMPTY || color[C1] != EMPTY || color[D1] != EMPTY || attack(C1, xside) || attack(D1, xside)) {
+                    if (couleur[B1] != VIDE || couleur[C1] != VIDE || couleur[D1] != VIDE || attack(C1, non_au_trait) || attack(D1, non_au_trait)) {
                         return false;
                     }
                     from = A1;
                     to = D1;
                     break;
                 case 6:
-                    if (color[F8] != EMPTY || color[G8] != EMPTY || attack(F8, xside) || attack(G8, xside)) {
+                    if (couleur[F8] != VIDE || couleur[G8] != VIDE || attack(F8, non_au_trait) || attack(G8, non_au_trait)) {
                         return false;
                     }
                     from = H8;
                     to = F8;
                     break;
                 case 2:
-                    if (color[B8] != EMPTY || color[C8] != EMPTY || color[D8] != EMPTY || attack(C8, xside) || attack(D8, xside)) {
+                    if (couleur[B8] != VIDE || couleur[C8] != VIDE || couleur[D8] != VIDE || attack(C8, non_au_trait) || attack(D8, non_au_trait)) {
                         return false;
                     }
                     from = A8;
@@ -243,26 +243,26 @@ public class Board implements Constants {
                     to = -1;
                     break;
             }
-            color[to] = color[from];
+            couleur[to] = couleur[from];
             piece[to] = piece[from];
-            color[from] = EMPTY;
-            piece[from] = EMPTY;
+            couleur[from] = VIDE;
+            piece[from] = VIDE;
         }
 
         /* back up information, so we can take the move back later. */
         um.mov = m;
-        um.capture = piece[m.to];
-        um.castle = castle;
+        um.capture = piece[m.dest];
+        um.castle = roque;
         um.ep = ep;
         um.fifty = fifty;
 
-        castle &= castle_mask[m.from] & castle_mask[m.to];
+        roque &= castle_mask[m.orig] & castle_mask[m.dest];
 
         if ((m.bits & 8) != 0) {
-            if (side == LIGHT) {
-                ep = m.to + 8;
+            if (au_trait == BLANC) {
+                ep = m.dest + 8;
             } else {
-                ep = m.to - 8;
+                ep = m.dest - 8;
             }
         } else {
             ep = -1;
@@ -274,29 +274,29 @@ public class Board implements Constants {
         }
 
         /* move the piece */
-        color[m.to] = side;
+        couleur[m.dest] = au_trait;
         if ((m.bits & 32) != 0) {
-            piece[m.to] = m.promote;
+            piece[m.dest] = m.promote;
         } else {
-            piece[m.to] = piece[m.from];
+            piece[m.dest] = piece[m.orig];
         }
-        color[m.from] = EMPTY;
-        piece[m.from] = EMPTY;
+        couleur[m.orig] = VIDE;
+        piece[m.orig] = VIDE;
 
         /* erase the pawn if this is an en passant move */
         if ((m.bits & 4) != 0) {
-            if (side == LIGHT) {
-                color[m.to + 8] = EMPTY;
-                piece[m.to + 8] = EMPTY;
+            if (au_trait == BLANC) {
+                couleur[m.dest + 8] = VIDE;
+                piece[m.dest + 8] = VIDE;
             } else {
-                color[m.to - 8] = EMPTY;
-                piece[m.to - 8] = EMPTY;
+                couleur[m.dest - 8] = VIDE;
+                piece[m.dest - 8] = VIDE;
             }
         }
 
-        side ^= 1;
-        xside ^= 1;
-        if (in_check(xside)) {
+        au_trait ^= 1;
+        non_au_trait ^= 1;
+        if (in_check(non_au_trait)) {
             takeback();
             return false;
         }
@@ -306,32 +306,32 @@ public class Board implements Constants {
 
     public void takeback() {
 
-        side ^= 1;
-        xside ^= 1;
+        au_trait ^= 1;
+        non_au_trait ^= 1;
 
-        Move m = um.mov;
-        castle = um.castle;
+        Coups m = um.mov;
+        roque = um.castle;
         ep = um.ep;
         fifty = um.fifty;
 
-        color[m.from] = side;
+        couleur[m.orig] = au_trait;
         if ((m.bits & 32) != 0) {
-            piece[m.from] = PAWN;
+            piece[m.orig] = PION;
         } else {
-            piece[m.from] = piece[m.to];
+            piece[m.orig] = piece[m.dest];
         }
-        if (um.capture == EMPTY) {
-            color[m.to] = EMPTY;
-            piece[m.to] = EMPTY;
+        if (um.capture == VIDE) {
+            couleur[m.dest] = VIDE;
+            piece[m.dest] = VIDE;
         } else {
-            color[m.to] = xside;
-            piece[m.to] = um.capture;
+            couleur[m.dest] = non_au_trait;
+            piece[m.dest] = um.capture;
         }
         if ((m.bits & 2) != 0) {
             int from;
             int to;
 
-            switch (m.to) {
+            switch (m.dest) {
                 case 62:
                     from = F1;
                     to = H1;
@@ -353,18 +353,18 @@ public class Board implements Constants {
                     to = -1;
                     break;
             }
-            color[to] = side;
-            piece[to] = ROOK;
-            color[from] = EMPTY;
-            piece[from] = EMPTY;
+            couleur[to] = au_trait;
+            piece[to] = TOUR;
+            couleur[from] = VIDE;
+            piece[from] = VIDE;
         }
         if ((m.bits & 4) != 0) {
-            if (side == LIGHT) {
-                color[m.to + 8] = xside;
-                piece[m.to + 8] = PAWN;
+            if (au_trait == BLANC) {
+                couleur[m.dest + 8] = non_au_trait;
+                piece[m.dest + 8] = PION;
             } else {
-                color[m.to - 8] = xside;
-                piece[m.to - 8] = PAWN;
+                couleur[m.dest - 8] = non_au_trait;
+                piece[m.dest - 8] = PION;
             }
         }
     }
@@ -376,14 +376,14 @@ public class Board implements Constants {
 
         System.out.print("\n8 ");
         for (i = 0; i < 64; ++i) {
-            switch (color[i]) {
-                case EMPTY:
+            switch (couleur[i]) {
+                case VIDE:
                     System.out.print(". ");
                     break;
-                case LIGHT:
+                case BLANC:
                     System.out.printf(piece_char_light[piece[i]] + " ");
                     break;
-                case DARK:
+                case NOIR:
                     System.out.printf(piece_char_dark[piece[i]] + " ");
                     break;
             }

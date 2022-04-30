@@ -2,7 +2,7 @@ package tscp;
 
 class UndoMove {
 
-    Move mov = new Move();
+    Coups mov = new Coups();
     int capture;
     int castle;
     int ep;

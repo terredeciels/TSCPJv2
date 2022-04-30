@@ -1,8 +1,8 @@
 package perft;
 
 import tscp.Board;
-import tscp.Constants;
-import tscp.Move;
+import tscp.Constantes;
+import tscp.Coups;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import tools.FenToBoard;
 
-public class PerftCompare implements Constants {
-
+public class PerftCompare implements Constantes {
+    //new brancheA1
     public static void main(String[] args) throws IOException {
         int maxDepth = 4;
         File directory = new File(".");
@@ -70,9 +70,9 @@ public class PerftCompare implements Constants {
             }
 
             board.gen();
-            List<Move> moves = board.pseudomoves;
-            for (Move move : moves) {
-                if (board.makemove(move)) {
+            List<Coups> pseudocoups = board.pseudomoves;
+            for (Coups coups : pseudocoups) {
+                if (board.makemove(coups)) {
                     PerftResult subPerft = perft(new Board(board), depth - 1);
                     board.takeback();
                     result.moveCount += subPerft.moveCount;

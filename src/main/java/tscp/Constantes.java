@@ -1,6 +1,14 @@
 package tscp;
 
-public interface Constants {
+public interface Constantes {
+
+    int[] INDEX_CASES64 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+            10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+            30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+            50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+            60, 61, 62, 63};
 
     String START_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     char[] fenChars = {'K', 'P', 'Q', 'R', 'B', 'N', '-', 'n', 'b', 'r', 'q', 'p', 'k'};
@@ -12,15 +20,15 @@ public interface Constants {
             BLACK_SHORT_CASTLE = 8;
     short MIN_STONE = -6, MAX_STONE = 6, NO_STONE = 0;
     int NO_COL = -1, NO_ROW = -1, NO_SQUARE = -1;
-    int LIGHT = 0;
-    int DARK = 1;
-    int PAWN = 0;
-    int KNIGHT = 1;
-    int BISHOP = 2;
-    int ROOK = 3;
-    int QUEEN = 4;
-    int KING = 5;
-    int EMPTY = 6;
+    int BLANC = 0;
+    int NOIR = 1;
+    int PION = 0;
+    int CAVALIER = 1;
+    int FOU = 2;
+    int TOUR = 3;
+    int DAME = 4;
+    int ROI = 5;
+    int VIDE = 6;
     int A1 = 56;
     int B1 = 57;
     int C1 = 58;

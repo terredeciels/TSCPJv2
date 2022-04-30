@@ -3,14 +3,14 @@ package perft;
 import perft.PerftCompare.PerftResult;
 
 import tscp.Board;
-import tscp.Move;
+import tscp.Coups;
 
 import java.io.IOException;
 import java.util.List;
 import tools.FenToBoard;
 
 public class PerftSpeed {
-
+    //new brancheA1
     public static void main(String[] args) throws IOException {
         perftTest();
     }
@@ -38,8 +38,8 @@ public class PerftSpeed {
             return result;
         }
         board.gen();
-        List<Move> moves = board.pseudomoves;
-        for (Move move : moves) {
+        List<Coups> moves = board.pseudomoves;
+        for (Coups move : moves) {
             if (board.makemove(move)) {
                 PerftResult subPerft = perft(new Board(board), depth - 1);
                 board.takeback();

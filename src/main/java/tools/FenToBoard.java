@@ -1,10 +1,10 @@
 package tools;
 
 import tscp.Board;
-import tscp.Constants;
+import tscp.Constantes;
 
-public class FenToBoard implements Constants {
-//test new brancheA1
+public class FenToBoard implements Constantes {
+
     private static Board board;
 
     public static Board toBoard(String fen) {
@@ -58,10 +58,10 @@ public class FenToBoard implements Constants {
             ch = fen.charAt(index + 1);
             switch (ch) {
                 case 'w':
-                    setToPlay(LIGHT);
+                    setToPlay(BLANC);
                     break;
                 case 'b':
-                    setToPlay(DARK);
+                    setToPlay(NOIR);
                     break;
                 default:
                     throw new IllegalArgumentException("Malformatted fen string: expected 'to play' as second field but found " + ch);
@@ -96,10 +96,10 @@ public class FenToBoard implements Constants {
                     index++;
                 }
             }
-            board.castle = (castles & 1) == 1 ? 2 : 0;
-            board.castle += (castles & 2) == 2 ? 1 : 0;
-            board.castle += (castles & 4) == 4 ? 8 : 0;
-            board.castle += (castles & 8) == 8 ? 4 : 0;
+            board.roque = (castles & 1) == 1 ? 2 : 0;
+            board.roque += (castles & 2) == 2 ? 1 : 0;
+            board.roque += (castles & 4) == 4 ? 8 : 0;
+            board.roque += (castles & 8) == 8 ? 4 : 0;
 
         } else {
             throw new IllegalArgumentException("Malformatted fen string: expected castles at index " + index);
@@ -131,7 +131,7 @@ public class FenToBoard implements Constants {
         }
         /*========== 6th field : full move number ==========*/
         if (index + 1 < fen.length() && fen.charAt(index) == ' ') {
-            if (board.side == LIGHT) {
+            if (board.au_trait == BLANC) {
                 setPlyNumber(2 * (Integer.parseInt(fen.substring(index + 1)) - 1));
             } else {
                 setPlyNumber(2 * (Integer.parseInt(fen.substring(index + 1)) - 1) + 1);
@@ -155,8 +155,8 @@ public class FenToBoard implements Constants {
     }
 
     static void setToPlay(int side) {
-        board.side = side;
-        board.xside = board.side == LIGHT ? DARK : LIGHT;
+        board.au_trait = side;
+        board.non_au_trait = board.au_trait == BLANC ? NOIR : BLANC;
     }
 
     static void setStone(int j, int i, int stone) {
@@ -165,8 +165,8 @@ public class FenToBoard implements Constants {
                 = abs(stone) == 0 ? 6
                 : abs(stone) == 6 ? 5
                 : abs(stone) == 5 ? 0 : abs(stone);
-        board.color[_case]
-                = stone < 0 ? LIGHT : stone > 0 ? DARK : EMPTY;
+        board.couleur[_case]
+                = stone < 0 ? BLANC : stone > 0 ? NOIR : VIDE;
     }
 
     static int abs(int x) {
